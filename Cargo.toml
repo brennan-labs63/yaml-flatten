@@ -1,0 +1,8 @@
+[package]
+name = "yaml-flatten"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "yaml-flatten"
+path = "src/main.rs"
