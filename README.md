@@ -64,12 +64,14 @@ whole thing is standard library.
 ## What it supports
 
 Block-style YAML: nested mappings, sequences (including sequences of
-mappings), scalars, comments, and blank lines. Strings, numbers, booleans
+mappings), single-line flow collections (`{a: 1}`, `[1, 2]`, nestable),
+scalars, comments, and blank lines. Empty `{}` and `[]` print as a literal
+`{}` or `[]` value so the key stays visible. Strings, numbers, booleans
 (`true`/`false`), and null (`null`/`~`/empty) are recognized.
 
 ## What it doesn't (yet)
 
-- Flow style (`{a: 1}`, `[1, 2]`)
+- Flow collections that span several lines
 - Anchors and aliases (`&foo`, `*foo`)
 - Multi-line block scalars (`|`, `>`)
 - Multiple documents in one file (`---` is skipped, not treated as a

@@ -9,6 +9,17 @@ pub fn flatten(value: &Value) -> Vec<(String, String)> {
 }
 
 fn walk(value: &Value, prefix: &str) -> Vec<(String, String)> {
+    // An empty `{}` or `[]` has no leaves, but dropping it would hide that the
+    // key exists at all, which matters when diffing two files.
+    match value {
+        Value::Mapping(entries) if entries.is_empty() && !prefix.is_empty() => {
+            return vec![(prefix.to_string(), "{}".to_string())];
+        }
+        Value::Sequence(items) if items.is_empty() && !prefix.is_empty() => {
+            return vec![(prefix.to_string(), "[]".to_string())];
+        }
+        _ => {}
+    }
     match value {
         Value::Mapping(entries) => entries
             .iter()
@@ -84,6 +95,21 @@ mod tests {
             vec![
                 ("hosts[0]".to_string(), "a".to_string()),
                 ("hosts[1]".to_string(), "b".to_string()),
+            ]
+        );
+    }
+
+    #[test]
+    fn keeps_empty_collections_visible() {
+        let value = Value::Mapping(vec![
+            ("labels".to_string(), Value::Mapping(vec![])),
+            ("hosts".to_string(), Value::Sequence(vec![])),
+        ]);
+        assert_eq!(
+            flatten(&value),
+            vec![
+                ("labels".to_string(), "{}".to_string()),
+                ("hosts".to_string(), "[]".to_string()),
             ]
         );
     }
